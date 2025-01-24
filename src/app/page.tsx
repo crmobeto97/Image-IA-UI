@@ -1,101 +1,92 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Upload from "@/components/upload";
+import React, { useState } from "react";
+
+
+const Home: React.FC = () => {
+
+  const [search, setSearch] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [view, setView] = useState<string>('LIST');
+  const [imageList, setImageList] = useState<any[]>([]);
+  const [uploadOpen, setUploadOpen] = useState<boolean>(false);
+
+  const addImageToList = (image: any) => {
+    setImageList((prev) => [...prev, image]);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <Upload
+        isOpen={uploadOpen}
+        onClose={() => setUploadOpen(!uploadOpen)}
+        onAddImage={addImageToList}
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+
+      <div className="p-4">
+
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-start mb-2" >
+          <div className="flex flex-row space-x-2" >
+            <span className="text-[20px]" >
+              Documentos
+            </span>
+            <span className="text-[20px]">
+              {'>'}
+            </span>
+            <span className="text-[20px] font-bold">
+              Carga
+            </span>
+
+          </div>
+
+          <button onClick={()=> setUploadOpen(!uploadOpen)} className="bg-black text-white font-bold text-[16px] px-8 py-2 rounded-[10px] mt-2 md:mt-0" >
+            Subir archivo
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+
+
+        <div className="flex flex-col md:flex-row items-center">
+
+          <div className="w-full md:w-1/2 flex flex-col md:flex-row justify-between space-y-2 md:space-y-0 items-center" >
+
+            <input className="bg-white text-[18px] px-8 py-4 rounded-[20px]" placeholder="Buscar" type="text" value={search} onChange={(e) => setSearch(e.target.value)} />
+
+            <label className="bg-transparent text-[18px] font-bold " >
+              Fecha:
+              <input className="bg-transparent px-8 py-4 font-normal" placeholder="Fecha" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            </label>
+          </div>
+
+          <div className="w-full md:w-1/2 flex flex-col md:flex-row justify-end items-center space-y-2 md:space-y-0 space-x-0 md:space-x-24 px-10  ">
+            <div className="bg-white rounded-[30px] h-12" >
+              <button onClick={() => setView('LIST')} className={`font-bold text-[25px]  w-14 h-12 rounded-[30px] ${view == 'LIST' && 'bg-gray-800 text-white'}`} >L</button>
+              <button onClick={() => setView('SQUARE')} className={`font-bold text-[25px] w-14 h-12 rounded-[30px] ${view == 'SQUARE' && 'bg-gray-800 text-white'} `}>C</button>
+            </div>
+
+            <button className="bg-transparent text-[20px] border border-solid border-gray-600 border-[4px] w-12 h-12 rounded-full" >
+              D
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row mt-4" >
+
+          <div className="w-full md:w-[75%] bg-white mb-4 md:mb-0 md:mr-4 rounded-[20px] min-h-screen" >
+
+          </div>
+
+          <div className="w-full md:w-[25%] bg-white  mb-4 md:mb-0 rounded-[20px] min-h-screen">
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+    </>)
 }
+
+export default Home;
