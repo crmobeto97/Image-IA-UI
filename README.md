@@ -34,3 +34,65 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+### Quick Start with Docker
+
+1.  Create the backend on https://github.com/crmobeto97/Image-AI-Backend
+
+1.  Build and Run node app container
+    1.  Build in principal folder with the command:
+        ```bash
+        docker build . -t node-1
+        ```
+    1.  Run the Container App:
+        *   For interactive terminal session with the host local files (for modification and test in real team, not need re-build) run
+
+            ```bash
+            $ docker run -it --rm --name="front-end" --network $network_name --ip 10.0.0.2 -p 3000:3000 -v $(pwd):"/home/realtime" node-1 bash
+            ```
+
+            or
+
+            ```bash
+            $ docker run -it \
+                --rm \
+                --name "front-end" \
+                --network $network_name \
+                --ip 10.0.0.2 \
+                -p 3000:3000 \
+                -v $(pwd):"/home/realtime" \
+                node-1 bash
+            ```
+            For run the application inside the terminal run:
+
+            ```bash
+            npm run dev
+            # or
+            yarn dev
+            # or
+            pnpm dev
+            # or
+            bun dev
+            ```
+
+        *   For non interactive run
+
+            ```bash
+            docker run --rm -d --name="front-end" -p 3000:3000 node-1
+            ```
+
+        flags:
+
+        * `--rm`&nbsp;&nbsp;&nbsp;&nbsp;    Erase the docker after stop
+        * `-d`&nbsp;&nbsp;&nbsp;&nbsp;      Run container in background and print container ID
+        * `-it`&nbsp;&nbsp;&nbsp;&nbsp;      Interactive session
+        * `--name`&nbsp;&nbsp;&nbsp;&nbsp;   Containers name
+        * `-p`&nbsp;&nbsp;&nbsp;&nbsp;       Publish a container's port(s) to the host (e.g., `-p <host port>:<container port>`)
+
+
+        more information flags in [docker container run options](https://docs.docker.com/reference/cli/docker/container/run/#options)
+
+<!-- Bibliografy -->
+[1]: https://example          "example documentation"
