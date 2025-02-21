@@ -1,21 +1,24 @@
+import { ImagesAPI } from "@/apis/APIImages";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
 
 interface Props {
     onClose: () => void;
     isOpen: boolean;
-    onAddImage: (image: any) => void;
+    setRefresh: () => void;
 }
 
-const Upload: React.FC<Props> = ({ onClose, isOpen }) => {
+const Upload: React.FC<Props> = ({ onClose, isOpen, setRefresh }) => {
 
     const [step, setStep] = useState<number>(1);
-    const [files, setFiles] = useState<any[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
 
     const handleClose = () => {
 
         setFiles([]);
         onClose();
+        setRefresh();
     }
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +39,43 @@ const Upload: React.FC<Props> = ({ onClose, isOpen }) => {
     const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
     };
+
+    const {
+        mutate: addImages,
+        isPending: isAddingImagesPending
+      } = useMutation({
+          mutationFn: (data: FormData) => ImagesAPI.uploadImage(data),
+          onSuccess: () => {
+            alert('Imagen subida correctamente');
+            handleClose();
+          },
+          onError: (error) => {
+            console.log('Error', error);
+          }
+      });
+
+      const handleUpload = () => {
+          if(files.length == 0){
+            alert('Selecciona al menos una imagen');
+            return;
+          }
+      
+          const uuid = localStorage.getItem("unique_token");
+          if(!uuid || !uuid.trim()){
+            alert('Error al obtener el token');
+            return;
+          }
+      
+          const data = new FormData();
+          data.append('token', uuid);
+          Array.from(files).forEach((image) => {
+            data.append('files', image);
+          });
+      
+          addImages(data);
+
+          
+        };
 
     if (!isOpen) return null;
 
@@ -110,7 +150,7 @@ const Upload: React.FC<Props> = ({ onClose, isOpen }) => {
                     <div className="flex flex-row justify-between items-center">
 
                         <button onClick={handleClose} className="bg-transparent text-[18px] text-red-600" >Cancelar</button>
-                        <button className="bg-black text-white text-[18px] px-6 py-2 rounded-[10px] font-bold" >Cargar</button>
+                        <button disabled={isAddingImagesPending} onClick={handleUpload} className={`bg-black text-white text-[18px] px-6 py-2 rounded-[10px] font-bold ${isAddingImagesPending && 'cursor-not-allowed'}`} >Cargar</button>
 
                     </div>
                 </div>

@@ -1,27 +1,56 @@
 'use client';
 
+import { ImagesAPI } from "@/apis/APIImages";
 import Upload from "@/components/upload";
-import React, { useState } from "react";
-
+import { useMutation, useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const Home: React.FC = () => {
 
   const [search, setSearch] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [view, setView] = useState<string>('LIST');
-  const [imageList, setImageList] = useState<any[]>([]);
+  const [imageList, setImageList] = useState<string[]>([]);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
+  const [refresh, setRefresh] = useState<boolean>(false);
 
-  const addImageToList = (image: any) => {
-    setImageList((prev) => [...prev, image]);
-  };
+  
+
+  const {
+    data, isLoading, isError, error
+  } = useQuery({
+    queryKey: ['images', [localStorage.getItem("unique_token"), refresh]],
+    enabled: localStorage.getItem("unique_token") ? true : false,
+    queryFn: () => ImagesAPI.getAll(localStorage.getItem("unique_token") as string)
+
+  })
+
+  useEffect(() => {
+    let token = localStorage.getItem("unique_token");
+    if (!token) {
+      token = uuidv4();
+      localStorage.setItem("unique_token", token);
+    }
+
+  }, []);
+
+
+  useEffect(()=> {
+    if(data){
+      setImageList(data.data);
+    }
+  }, [data]);
+
+  
 
   return (
     <>
       <Upload
         isOpen={uploadOpen}
         onClose={() => setUploadOpen(!uploadOpen)}
-        onAddImage={addImageToList}
+        
+        setRefresh={() => setRefresh(!refresh)}
       />
 
 
@@ -41,7 +70,7 @@ const Home: React.FC = () => {
 
           </div>
 
-          <button onClick={()=> setUploadOpen(!uploadOpen)} className="bg-black text-white font-bold text-[16px] px-8 py-2 rounded-[10px] mt-2 md:mt-0" >
+          <button onClick={() => setUploadOpen(!uploadOpen)} className="bg-black text-white font-bold text-[16px] px-8 py-2 rounded-[10px] mt-2 md:mt-0" >
             Subir archivo
           </button>
         </div>
@@ -73,8 +102,49 @@ const Home: React.FC = () => {
 
         <div className="flex flex-col md:flex-row mt-4" >
 
-          <div className="w-full md:w-[75%] bg-white mb-4 md:mb-0 md:mr-4 rounded-[20px] min-h-screen" >
+          <div className="w-full md:w-[75%] bg-white mb-4 md:mb-0 md:mr-4 rounded-[20px] min-h-screen py-8" >
+            {
+              isLoading ? <div className="flex justify-center items-center h-screen" >Cargando...</div> :
+                isError ? <div className="flex justify-center items-center h-screen" >Error: {error.message}</div> :
+                <div>
+                  {
+                    view == 'LIST' ? 
+                    <table className="w-full border-collapse px-1 text-[16px] text-[#494949] text-left " >
+                      <thead>
+                            <tr>
+                                <th className="w-[10%]">
 
+                                </th>
+                                <th className="w-[40%]">Archivo</th>
+                                <th className="w-[25%]">Tipo</th>
+                                <th className="w-[25%]">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td colSpan={8} style={{ height: '16px' }}></td>
+                            </tr>
+
+                            {imageList.map((item: any, index: any) => (
+                                
+                                    <tr key={index} className="border-b border-solid border-gray-300" >
+                                       
+                                        <td className=""></td>
+                                        <td className="">{item}</td>
+                                       
+                                    </tr>
+                                    
+                               
+
+                            ))}
+                        </tbody>
+
+
+                    </table> : view == 'SQUARE' ? <div className="grid grid-cols-3 gap-4 p-4" ></div> : null
+                  }
+                </div>
+            }
           </div>
 
           <div className="w-full md:w-[25%] bg-white  mb-4 md:mb-0 rounded-[20px] min-h-screen">
