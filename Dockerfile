@@ -21,14 +21,16 @@ RUN update-ca-certificates
 RUN curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt install -y nodejs
-RUN npm i
+
 
 ## Copy code
-#COPY ./app ./app
-# WORKDIR /home/app
+COPY . ./app
+WORKDIR /home/app
+RUN npm i
 
 ## for realtime test local changes files
 RUN mkdir /home/realtime
 
 EXPOSE 3000
 #CMD tail -f /dev/null
+#CMD npm run dev
