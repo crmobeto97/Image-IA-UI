@@ -3,10 +3,10 @@ import { api } from "./axiosConfig"
 
 export const ImagesAPI = {
 
-    getAll: async function(uuid: string) {
+    getAllRaw: async function(uuid: string) {
         return api
         .request({
-            url: `/images/?uuid=${uuid}`,
+            url: `/images/raw?uuid=${uuid}`,
             method: 'GET'
         })
         .then((response) => {
@@ -19,7 +19,7 @@ export const ImagesAPI = {
     uploadImage: async function(data: FormData) {
         return api
         .request({
-            url: `/images/`,
+            url: `/images/raw`,
             method: 'POST',
             data: data
         })

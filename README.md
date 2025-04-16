@@ -68,6 +68,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
             For run the application inside the terminal run:
 
             ```bash
+            npm i
+            ## for run
             npm run dev
             # or
             yarn dev

@@ -22,7 +22,7 @@ const Home: React.FC = () => {
   } = useQuery({
     queryKey: ['images', [localStorage.getItem("unique_token"), refresh]],
     enabled: localStorage.getItem("unique_token") ? true : false,
-    queryFn: () => ImagesAPI.getAll(localStorage.getItem("unique_token") as string)
+    queryFn: () => ImagesAPI.getAllRaw(localStorage.getItem("unique_token") as string)
 
   })
 
