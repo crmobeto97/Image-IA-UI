@@ -1,4 +1,4 @@
-const environment: string = "local";
+const environment: string = "dev";
 
 var Backend: string;
 
@@ -8,7 +8,7 @@ switch (environment) {
         Backend = "http://localhost:8000/";
         break;
     case "dev":
-		Backend = "http://35.153.207.30:8000/";
+		Backend = "http://54.162.40.248:8000/";
 		break;
     case "prod":
 		Backend = "";

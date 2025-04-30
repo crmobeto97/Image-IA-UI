@@ -42,6 +42,22 @@ export const ImagesAPI = {
         .catch((error) => {
             throw error;
         });
+    },
+    
+    processImage: async function(data: FormData) {
+        return api
+        .request({
+            url: `/model/`,
+            method: 'POST',
+            data: data
+        })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw error;
+        });
+    
     }
 
 }

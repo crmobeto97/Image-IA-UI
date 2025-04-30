@@ -70,7 +70,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
             ```bash
             npm i
             ## for run
-            npm run dev
+            npm run dev -- -H 0.0.0.0 -p 3000
             # or
             yarn dev
             # or

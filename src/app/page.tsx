@@ -63,6 +63,13 @@ const Home: React.FC = () => {
     }
   }, [processedData]);
   
+  const HandleProcessImage = () => {
+    const data = new FormData();
+    data.append('token', token as string);
+    ImagesAPI.processImage(data)
+
+    };
+  
 
   return (
     <>
@@ -113,6 +120,8 @@ const Home: React.FC = () => {
               <button onClick={() => setView('LIST')} className={`font-bold text-[25px]  w-14 h-12 rounded-[30px] ${view == 'LIST' && 'bg-gray-800 text-white'}`} >L</button>
               <button onClick={() => setView('SQUARE')} className={`font-bold text-[25px] w-14 h-12 rounded-[30px] ${view == 'SQUARE' && 'bg-gray-800 text-white'} `}>C</button>
             </div>
+            
+            <button onClick={() => HandleProcessImage() } className="bg-transparent text-[20px] border border-solid border-gray-600 border-[4px] w-12 h-12 rounded-full" > P </button>                          
 
             <button className="bg-transparent text-[20px] border border-solid border-gray-600 border-[4px] w-12 h-12 rounded-full" >
               D
