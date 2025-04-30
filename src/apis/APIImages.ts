@@ -16,6 +16,19 @@ export const ImagesAPI = {
             throw error;
         });
     },
+    getAllProcessed: async function(uuid: string) {
+        return api
+        .request({
+            url: `/images/processed?uuid=${uuid}`,
+            method: 'GET'
+        })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw error;
+        });
+    },
     uploadImage: async function(data: FormData) {
         return api
         .request({

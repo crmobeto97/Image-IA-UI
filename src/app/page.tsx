@@ -15,6 +15,8 @@ const Home: React.FC = () => {
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
+  const [processedList, setProcessedList] = useState<string[]>([]);
+
   
 
   // Set token only on client
@@ -43,6 +45,23 @@ const Home: React.FC = () => {
     }
   }, [data]);
 
+
+  const {
+    data: processedData,
+    isLoading: isProcessedLoading,
+    isError: isProcessedError,
+    error: processedError
+  } = useQuery({
+    queryKey: ['processedImages', token, refresh],
+    enabled: !!token,
+    queryFn: () => ImagesAPI.getAllProcessed(token as string),
+  });
+
+  useEffect(() => {
+    if (processedData) {
+      setProcessedList(processedData.data);
+    }
+  }, [processedData]);
   
 
   return (
@@ -129,7 +148,7 @@ const Home: React.FC = () => {
 
                             {imageList.map((item: any, index: any) => (
                                 
-                                    <tr key={index} className="border-b border-solid border-gray-300" >
+                                    <tr key={index} className="border-b border-solid border-blue-300" >
                                        
                                         <td className=""></td>
                                         <td className="">{item}</td>
@@ -139,6 +158,19 @@ const Home: React.FC = () => {
                                
 
                             ))}
+                            
+                            {processedList.map((item: any, index: any) => (
+                                
+                                <tr key={index} className="border-b border-solid border-green-300" >
+                                   
+                                    <td className=""></td>
+                                    <td className="">{item}</td>
+                                   
+                                </tr>
+                                
+                           
+
+                        ))}
                         </tbody>
 
 
