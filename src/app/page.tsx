@@ -14,26 +14,27 @@ const Home: React.FC = () => {
   const [imageList, setImageList] = useState<string[]>([]);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
-
+  const [token, setToken] = useState<string | null>(null);
   
 
+  // Set token only on client
+  useEffect(() => {
+    let localToken = window.localStorage.getItem("unique_token");
+    if (!localToken) {
+      localToken = uuidv4();
+      window.localStorage.setItem("unique_token", localToken);
+    }
+    setToken(localToken);
+  }, []);
+
+  // Query only runs once token is available
   const {
     data, isLoading, isError, error
   } = useQuery({
-    queryKey: ['images', [localStorage.getItem("unique_token"), refresh]],
-    enabled: localStorage.getItem("unique_token") ? true : false,
-    queryFn: () => ImagesAPI.getAllRaw(localStorage.getItem("unique_token") as string)
-
+    queryKey: ['images', token, refresh],
+    enabled: !!token,
+    queryFn: () => ImagesAPI.getAllRaw(token as string),
   })
-
-  useEffect(() => {
-    let token = localStorage.getItem("unique_token");
-    if (!token) {
-      token = uuidv4();
-      localStorage.setItem("unique_token", token);
-    }
-
-  }, []);
 
 
   useEffect(()=> {

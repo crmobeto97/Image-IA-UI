@@ -1,4 +1,4 @@
-const environment: string = "dev";
+const environment: string = "local";
 
 var Backend: string;
 
