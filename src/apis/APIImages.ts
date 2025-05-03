@@ -29,6 +29,20 @@ export const ImagesAPI = {
             throw error;
         });
     },
+    getFile: async function(uuid: string, status_process: boolean, filename: string) {
+        return api
+        .request({
+            url: `/images/file?uuid=${uuid}&status_process=${status_process}&filename=${filename}`,
+            method: 'GET',
+            responseType: 'blob' 
+        })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw error;
+        });
+    },
     uploadImage: async function(data: FormData) {
         return api
         .request({
