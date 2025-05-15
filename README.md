@@ -41,11 +41,21 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 1.  Create the backend on https://github.com/crmobeto97/Image-AI-Backend
 
+1.  Create the network follow  [README.md](https://github.com/crmobeto97/Image-AI-Backend/blob/main/network/README.md ) in [network](https://github.com/crmobeto97/Image-AI-Backend/tree/main/network)
+
+    1.  Enter in  [network](https://github.com/crmobeto97/Image-AI-Backend/tree/main/network)
+    1.  Run script [create_docker_network.sh](https://github.com/crmobeto97/Image-AI-Backend/blob/main/network/create_docker_network.sh) 
+
+    if you creatred before only run in your terminal
+
+    1. network_name="image-ia"
+    
 1.  Build and Run node app container
     1.  Build in principal folder with the command:
         ```bash
         docker build . -t node-1
         ```
+
     1.  Run the Container App:
         *   For interactive terminal session with the host local files (for modification and test in real team, not need re-build) run
 
@@ -68,7 +78,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
             For run the application inside the terminal run:
 
             ```bash
-            npm run dev
+            npm i
+            ## for run
+            npm run dev -- -H 0.0.0.0 -p 3000
             # or
             yarn dev
             # or

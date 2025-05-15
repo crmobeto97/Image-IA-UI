@@ -2,6 +2,7 @@
 
 import { ImagesAPI } from "@/apis/APIImages";
 import Upload from "@/components/upload";
+import { Backend } from "@/utils/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -14,26 +15,31 @@ const Home: React.FC = () => {
   const [imageList, setImageList] = useState<string[]>([]);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [processedList, setProcessedList] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   
 
+  // Set token only on client
+  useEffect(() => {
+    let localToken = window.localStorage.getItem("unique_token");
+    if (!localToken) {
+      localToken = uuidv4();
+      window.localStorage.setItem("unique_token", localToken);
+    }
+    setToken(localToken);
+  }, []);
+
+  // Query only runs once token is available
   const {
     data, isLoading, isError, error
   } = useQuery({
-    queryKey: ['images', [localStorage.getItem("unique_token"), refresh]],
-    enabled: localStorage.getItem("unique_token") ? true : false,
-    queryFn: () => ImagesAPI.getAll(localStorage.getItem("unique_token") as string)
-
+    queryKey: ['images', token, refresh],
+    enabled: !!token,
+    queryFn: () => ImagesAPI.getAllRaw(token as string),
   })
-
-  useEffect(() => {
-    let token = localStorage.getItem("unique_token");
-    if (!token) {
-      token = uuidv4();
-      localStorage.setItem("unique_token", token);
-    }
-
-  }, []);
 
 
   useEffect(()=> {
@@ -42,6 +48,83 @@ const Home: React.FC = () => {
     }
   }, [data]);
 
+
+  const {
+    data: processedData,
+    isLoading: isProcessedLoading,
+    isError: isProcessedError,
+    error: processedError
+  } = useQuery({
+    queryKey: ['processedImages', token, refresh],
+    enabled: !!token,
+    queryFn: () => ImagesAPI.getAllProcessed(token as string),
+  });
+
+  useEffect(() => {
+    if (processedData) {
+      setProcessedList(processedData.data);
+    }
+  }, [processedData]);
+  
+  const HandleProcessImage = () => {
+    const data = new FormData();
+    data.append('token', token as string);
+    ImagesAPI.processImage(data)
+
+    };
+
+
+    useEffect(() => {
+      let url: string | null = null;
+
+      const fetchImage = async () => {
+        if (!selectedImage || !token) {
+          setPreviewUrl(null);
+          return;
+        }
+        // Determinar si es una imagen procesad
+        const isProcessed = processedList.includes(selectedImage);
+        try {
+          const blob = await ImagesAPI.getFile(token, isProcessed, selectedImage);
+          url = URL.createObjectURL(blob);
+          setPreviewUrl(url);
+        } catch (error) {
+          console.error("Error cargando imagen", error);
+          setPreviewUrl(null);
+        }
+      };
+    
+      fetchImage();
+    
+      // Limpia el objeto URL al desmontar o cambiar de imagen
+      return () => {
+        if (url) {
+          URL.revokeObjectURL(url);
+        }
+      };
+    }, [selectedImage, token, processedList]);
+    
+
+    const handleDownload = async () => {
+      if (!selectedImage || !token) return;
+    
+      const isProcessed = processedList.includes(selectedImage);
+      try {
+        const blob = await ImagesAPI.getFile(token, isProcessed, selectedImage);
+        const url = URL.createObjectURL(blob);
+    
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = selectedImage;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error al descargar la imagen", error);
+      }
+    };
+    
   
 
   return (
@@ -93,8 +176,14 @@ const Home: React.FC = () => {
               <button onClick={() => setView('LIST')} className={`font-bold text-[25px]  w-14 h-12 rounded-[30px] ${view == 'LIST' && 'bg-gray-800 text-white'}`} >L</button>
               <button onClick={() => setView('SQUARE')} className={`font-bold text-[25px] w-14 h-12 rounded-[30px] ${view == 'SQUARE' && 'bg-gray-800 text-white'} `}>C</button>
             </div>
+            
+            <button onClick={() => HandleProcessImage() } className="bg-transparent text-[20px] border border-solid border-gray-600 border-[4px] w-12 h-12 rounded-full" > P </button>                          
 
-            <button className="bg-transparent text-[20px] border border-solid border-gray-600 border-[4px] w-12 h-12 rounded-full" >
+            <button
+              onClick={handleDownload}
+              disabled={!selectedImage}
+              className="bg-transparent text-[20px] border border-solid border-gray-600 border-[4px] w-12 h-12 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               D
             </button>
           </div>
@@ -128,27 +217,99 @@ const Home: React.FC = () => {
 
                             {imageList.map((item: any, index: any) => (
                                 
-                                    <tr key={index} className="border-b border-solid border-gray-300" >
-                                       
-                                        <td className=""></td>
-                                        <td className="">{item}</td>
-                                       
-                                    </tr>
-                                    
+                                <tr
+                                    key={index}
+                                    className={`border-b border-solid border-blue-300 cursor-pointer hover:bg-blue-100 ${
+                                      selectedImage === item ? "bg-blue-200" : ""
+                                    }`}
+                                    onClick={() => setSelectedImage(item)}
+                                  >
+                                    <td></td>
+                                    <td>{item}</td>
+                                    <td>Tipo</td>
+                                    <td>Fecha</td>
+                                </tr>
                                
 
                             ))}
+                            
+                            {processedList.map((item: any, index: any) => (
+                                
+                                // <tr key={index} className="border-b border-solid border-green-300" >
+                                   
+                                //     <td className=""></td>
+                                //     <td className="">{item}</td>
+                                   
+                                // </tr>
+                                <tr
+                                    key={index}
+                                    className={`border-b border-solid border-blue-300 cursor-pointer hover:bg-blue-100 ${
+                                      selectedImage === item ? "bg-blue-200" : ""
+                                    }`}
+                                    onClick={() => setSelectedImage(item)}
+                                  >
+                                    <td></td>
+                                    <td>{item}</td>
+                                    <td>Tipo</td>
+                                    <td>Fecha</td>
+                                  </tr>
+                           
+
+                        ))}
                         </tbody>
 
 
-                    </table> : view == 'SQUARE' ? <div className="grid grid-cols-3 gap-4 p-4" ></div> : null
-                  }
+                    </table> : view === 'SQUARE' ? (
+
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+                              {[...imageList, ...processedList].map((item: string, index: number) => {
+                                const isProcessed = processedList.includes(item);
+                                const isSelected = selectedImage === item;
+
+                                return (
+                                  <div
+                                    key={index}
+                                    onClick={() => setSelectedImage(item)}
+                                    className={`cursor-pointer border-4 rounded-xl p-2 flex flex-col items-center hover:border-blue-400 ${
+                                      isSelected ? "border-blue-600" : "border-gray-300"
+                                    }`}
+                                  >
+                                    <div className="w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden rounded">
+                                      <img
+                                        src={`${Backend}images/file?uuid=${token}&filename=${item}&status_process=${isProcessed}`}
+                                        alt={item}
+                                        className="object-contain max-h-full max-w-full"
+                                        onError={(e) => {
+                                          // fallback en caso de error de carga
+                                          (e.target as HTMLImageElement).src = "/placeholder.png";
+                                        }}
+                                      />
+                                    </div>
+                                    <p className="text-sm mt-2 text-center break-all">{item}</p>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : null}
                 </div>
             }
           </div>
 
           <div className="w-full md:w-[25%] bg-white  mb-4 md:mb-0 rounded-[20px] min-h-screen">
-
+            {
+              selectedImage ? (
+                <>
+                  <p className="font-bold mb-2">Vista previa</p>
+                  <img
+                    src={previewUrl ?? undefined}
+                    alt="Preview"
+                    className="w-full h-auto rounded-lg shadow"
+                  />
+                </>
+              ) : (
+                <p className="text-gray-500">Selecciona una imagen para ver la vista previa</p>
+              )
+            }
           </div>
 
 
