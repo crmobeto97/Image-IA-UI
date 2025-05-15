@@ -1,12 +1,12 @@
 import { api } from "./axiosConfig"
 
-
+console.log("api base url: ", api.defaults.baseURL)
 export const ImagesAPI = {
 
     getAllRaw: async function(uuid: string) {
         return api
         .request({
-            url: `/images/raw?uuid=${uuid}`,
+            url: `${api.defaults.baseURL}images/raw?uuid=${uuid}`,
             method: 'GET'
         })
         .then((response) => {

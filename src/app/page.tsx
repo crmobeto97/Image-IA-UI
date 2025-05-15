@@ -301,7 +301,7 @@ const Home: React.FC = () => {
                 <>
                   <p className="font-bold mb-2">Vista previa</p>
                   <img
-                    src={previewUrl}
+                    src={previewUrl ?? undefined}
                     alt="Preview"
                     className="w-full h-auto rounded-lg shadow"
                   />
