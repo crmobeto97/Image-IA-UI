@@ -34,3 +34,5 @@ RUN mkdir /home/realtime
 EXPOSE 3000
 #CMD tail -f /dev/null
 #CMD npm run dev
+RUN npm run build
+CMD npm run start

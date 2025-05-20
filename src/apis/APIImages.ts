@@ -1,6 +1,6 @@
 import { api } from "./axiosConfig"
 
-console.log("api base url: ", api.defaults.baseURL)
+console.log(`api base url: ${api.defaults.baseURL}`)
 export const ImagesAPI = {
 
     getAllRaw: async function(uuid: string) {
@@ -61,7 +61,7 @@ export const ImagesAPI = {
     processImage: async function(data: FormData) {
         return api
         .request({
-            url: `/model/`,
+            url: `/detect/`,
             method: 'POST',
             data: data
         })

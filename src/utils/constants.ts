@@ -1,5 +1,5 @@
 // const environment: string = "local";
-const environment: string = process.env.ENVIRONMENT ?? 'local';
+const environment: string = process.env.ENVIRONMENT //?? 'local';
 console.log(environment)
 var Backend: string;
 switch (environment) {
@@ -10,7 +10,7 @@ switch (environment) {
 		Backend = "http://54.197.75.153:8000/";
 		break;
     case "prod":
-		Backend = "http://54.197.75.153:8000/";
+		Backend = "http://18.208.172.153:8000/";
 		break;
 }
 export { Backend };
