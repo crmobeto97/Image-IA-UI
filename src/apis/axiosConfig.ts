@@ -2,9 +2,11 @@ import { Backend } from "@/utils/constants";
 import axios from "axios";
 
 const API_ROUTE = Backend;
+console.log(`APi Route: ${API_ROUTE}`)
 const api = axios.create({
 	withCredentials: false,
-	baseURL: API_ROUTE,
+	//baseURL:  "http://13.218.216.83:8000/",
+	baseURL: API_ROUTE
 });
 
 const errorHandler = (error: any) => {
