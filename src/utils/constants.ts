@@ -1,6 +1,8 @@
-// const environment: string = "local";
-const environment: string = process.env.ENVIRONMENT ?? 'local';
-console.log(environment)
+const environment: string = process.env.NEXT_PUBLIC_ENVIRONMENT || "prod";
+const api_url: string =  process.env.NEXT_PUBLIC_API_URL || '';
+
+console.log("ENVIRONMENT:", environment);
+
 var Backend: string;
 switch (environment) {
     case "local":
@@ -10,10 +12,21 @@ switch (environment) {
 		Backend = "http://54.197.75.153:8000/";
 		break;
     case "prod":
-		Backend = "http://54.197.75.153:8000/";
+        if( api_url !== '') {
+          console.log('Production environment and NEXT_PUBLIC_ENVIRONMENT is not empty.');
+          Backend = api_url;
+        } else {
+          console.log('Production environment but NEXT_PUBLIC_ENVIRONMENT is empty.');
+          Backend = "http://127.0.0.1:8000/";
+        }
+		
 		break;
+    default:
+        Backend = "http://localhost:8000/"
 }
+
+console.log("BACKEND URL:", Backend);
+
 export { Backend };
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
