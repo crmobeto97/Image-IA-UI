@@ -8,9 +8,12 @@ switch (environment) {
     case "local":
         Backend = "http://localhost:8000/";
         break;
+    case "kubernetes":
+        Backend = "http://backend-service:8000";
+        break;
     case "dev":
-		Backend = "http://54.197.75.153:8000/";
-		break;
+		    Backend = "http://54.197.75.153:8000/";
+		    break;
     case "prod":
         if( api_url !== '') {
           console.log('Production environment and NEXT_PUBLIC_ENVIRONMENT is not empty.');
